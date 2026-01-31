@@ -1,151 +1,255 @@
-.welcome-container {
+/* 
+ * Welcome Page - Apple Liquid Glass Style
+ * ============================================
+ */
+
+/* ============================================
+   PAGE LAYOUT
+   ============================================ */
+.welcome-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-primary);
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* Header Styles */
-.welcome-header {
+/* Ambient Background Effects */
+.welcome-page::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150%;
+  height: 60%;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 0%,
+    rgba(99, 102, 241, 0.12) 0%,
+    rgba(139, 92, 246, 0.06) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.welcome-page::after {
+  content: '';
+  position: fixed;
+  bottom: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 50%;
+  background: radial-gradient(
+    ellipse 60% 40% at 50% 100%,
+    rgba(0, 113, 227, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   GLASS NAVBAR
+   ============================================ */
+.welcome-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 32px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--space-4) var(--space-8);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.header-logo {
+@media (max-width: 640px) {
+  .welcome-navbar {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* Logo */
+.navbar-logo {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
 }
 
-.logo-text {
+.navbar-logo-text {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.5px;
+  font-size: 20px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary-dark);
 }
 
-.header-actions {
+/* Nav Links */
+.navbar-links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-1);
 }
 
-.header-analytics-button {
-  padding: 10px 24px;
-  background: rgba(99, 102, 241, 0.3);
-  color: white;
-  border: 1px solid rgba(99, 102, 241, 0.5);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+.nav-link {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-normal);
+  border: none;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: 
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
 }
 
-.header-analytics-button:hover {
-  background: rgba(99, 102, 241, 0.5);
-  border-color: rgba(99, 102, 241, 0.7);
-  transform: translateY(-1px);
+.nav-link:hover {
+  color: var(--text-primary-dark);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.header-analytics-button:active {
-  transform: translateY(0);
+.nav-link.active {
+  color: var(--text-primary-dark);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.header-logout-button {
-  padding: 10px 24px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+/* User Actions */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.nav-btn {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  border: none;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: 
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
 }
 
-.header-logout-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-1px);
+.nav-btn:hover {
+  color: var(--text-primary-dark);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.header-logout-button:active {
-  transform: translateY(0);
+.nav-btn-primary {
+  background: var(--accent-blue);
+  color: #ffffff;
 }
 
-/* Main Content */
+.nav-btn-primary:hover {
+  background: var(--accent-blue-hover);
+  color: #ffffff;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
 .welcome-main {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 40px 20px;
-  gap: 32px;
+  padding: var(--space-12) var(--space-6);
+  position: relative;
+  z-index: 1;
 }
 
-.welcome-greeting {
+@media (max-width: 640px) {
+  .welcome-main {
+    padding: var(--space-8) var(--space-5);
+  }
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.welcome-hero {
   text-align: center;
+  margin-bottom: var(--space-12);
+  opacity: 0;
+  animation: fadeInUp 0.6s var(--ease-out) forwards;
 }
 
-.welcome-greeting h1 {
+.hero-eyebrow {
+  font-size: var(--text-eyebrow);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  margin-bottom: var(--space-4);
+}
+
+.hero-title {
+  font-size: var(--text-hero);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--text-primary-dark);
+  margin: 0 0 var(--space-4);
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
   margin: 0;
-  font-size: 42px;
-  color: white;
-  font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Legacy styles (kept for backward compatibility if needed) */
-.welcome-card {
-  background: white;
-  border-radius: 16px;
-  padding: 48px;
+/* ============================================
+   VOICE AGENT SECTION
+   ============================================ */
+.voice-agent-section {
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  text-align: center;
+  max-width: 560px;
+  opacity: 0;
+  animation: fadeInUp 0.6s var(--ease-out) 0.15s forwards;
 }
 
-.welcome-card h1 {
-  margin: 0 0 16px 0;
-  font-size: 36px;
-  color: #1a1a2e;
-}
-
-.welcome-message {
-  font-size: 18px;
-  color: #374151;
-  margin: 0 0 8px 0;
-}
-
-.welcome-message strong {
-  color: #667eea;
-}
-
-.welcome-subtitle {
-  color: #666;
-  margin: 0 0 32px 0;
-}
-
-.signout-button {
-  padding: 12px 32px;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.signout-button:hover {
-  background: #e5e7eb;
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(32px, 10vw, 48px);
+  }
+  
+  .hero-subtitle {
+    font-size: var(--text-body);
+  }
+  
+  .navbar-logo-text {
+    font-size: 18px;
+  }
+  
+  .nav-link span:not(.nav-icon) {
+    display: none;
+  }
 }

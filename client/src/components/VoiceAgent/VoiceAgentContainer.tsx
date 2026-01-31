@@ -70,11 +70,12 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
   if (error) {
     return (
       <div className="voice-agent-container">
-        <div className="voice-agent-error">
+        <div className="voice-agent-card voice-agent-error">
+          <div className="error-icon">⚠️</div>
           <p>Unable to connect to voice agent</p>
           <p className="error-detail">{error}</p>
           <button onClick={handleConnect} className="retry-button">
-            Retry
+            Try Again
           </button>
         </div>
       </div>
@@ -84,9 +85,9 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
   if (isConnecting) {
     return (
       <div className="voice-agent-container">
-        <div className="voice-agent-loading">
+        <div className="voice-agent-card voice-agent-loading">
           <div className="loading-spinner"></div>
-          <p>Connecting to voice agent...</p>
+          <p>Connecting to your AI coach...</p>
         </div>
       </div>
     )
@@ -96,10 +97,11 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
   if (!shouldConnect || !token) {
     return (
       <div className="voice-agent-container">
-        <div className="voice-agent-idle">
-          <p>Ready to connect to your voice agent</p>
+        <div className="voice-agent-card voice-agent-idle">
+          <div className="idle-icon">🎤</div>
+          <p>Tap to start your voice-powered workout session</p>
           <button onClick={handleConnect} className="connect-button">
-            Connect
+            Start Session
           </button>
         </div>
       </div>
@@ -130,7 +132,7 @@ function VoiceAgentContent({ onDisconnect }: VoiceAgentContentProps) {
   if (connectionState === 'connecting') {
     return (
       <div className="voice-agent-container">
-        <div className="voice-agent-loading">
+        <div className="voice-agent-card voice-agent-loading">
           <div className="loading-spinner"></div>
           <p>Connecting...</p>
         </div>
@@ -141,7 +143,8 @@ function VoiceAgentContent({ onDisconnect }: VoiceAgentContentProps) {
   if (connectionState === 'disconnected') {
     return (
       <div className="voice-agent-container">
-        <div className="voice-agent-idle">
+        <div className="voice-agent-card voice-agent-idle">
+          <div className="idle-icon">🔌</div>
           <p>Disconnected from voice agent</p>
           <button onClick={onDisconnect} className="connect-button">
             Reconnect
@@ -154,7 +157,7 @@ function VoiceAgentContent({ onDisconnect }: VoiceAgentContentProps) {
   return (
     <div className="voice-agent-container">
       <RoomAudioRenderer />
-      <div className="voice-agent-content">
+      <div className="voice-agent-card voice-agent-content">
         <AgentVisualizer />
         <AgentControls onDisconnect={onDisconnect} />
       </div>

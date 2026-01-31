@@ -11,13 +11,21 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  LineChart,
-  Line
+  Cell
 } from 'recharts'
 import './Analytics.css'
 
-const COLORS = ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e']
+// Apple-inspired color palette
+const COLORS = ['#0071e3', '#30d158', '#bf5af2', '#ff9f0a', '#ff375f', '#5e5ce6']
+
+// Custom tooltip style
+const tooltipStyle = {
+  backgroundColor: 'rgba(29, 29, 31, 0.95)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '12px',
+  padding: '12px 16px',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+}
 
 export function Analytics() {
   const { user, signOut } = useAuth()
@@ -33,14 +41,13 @@ export function Analytics() {
     navigate('/')
   }
 
-  // Get user's name
+  // Get user's first name
   const firstName = user?.user_metadata?.first_name || ''
-  const lastName = user?.user_metadata?.last_name || ''
-  const fullName = `${firstName} ${lastName}`.trim() || 'User'
+  const displayName = firstName || 'Your'
 
   if (loading) {
     return (
-      <div className="analytics-container">
+      <div className="analytics-page">
         <div className="loading-state">
           <div className="loading-spinner"></div>
           <p>Loading your analytics...</p>
@@ -51,10 +58,10 @@ export function Analytics() {
 
   if (error) {
     return (
-      <div className="analytics-container">
+      <div className="analytics-page">
         <div className="error-state">
           <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
+          <button onClick={() => window.location.reload()}>Try Again</button>
         </div>
       </div>
     )
@@ -62,7 +69,7 @@ export function Analytics() {
 
   // Prepare chart data
   const exerciseChartData = exercises.slice(0, 6).map(e => ({
-    name: e.exercise.length > 12 ? e.exercise.slice(0, 12) + '...' : e.exercise,
+    name: e.exercise.length > 10 ? e.exercise.slice(0, 10) + '...' : e.exercise,
     count: e.count,
     volume: e.total_reps
   }))
@@ -72,140 +79,158 @@ export function Analytics() {
     value: e.count
   }))
 
-  // Monthly activity for line chart
-  const monthlyActivity = consistency?.this_month_days.reduce((acc, day) => {
-    const date = new Date(day).getDate()
-    acc.push({ day: date, workouts: 1 })
-    return acc
-  }, [] as { day: number; workouts: number }[]) || []
-
   return (
-    <div className="analytics-container">
-      <header className="analytics-header">
-        <div className="header-left">
-          <button className="back-button" onClick={handleBack}>
-            ← Back
+    <div className="analytics-page">
+      {/* Glass Navbar */}
+      <nav className="analytics-navbar">
+        <div className="navbar-logo">
+          <h1 className="navbar-logo-text">Hype Me Up</h1>
+        </div>
+        
+        <div className="navbar-links">
+          <button className="nav-link" onClick={handleBack}>
+            Home
           </button>
-          <h1 className="logo-text">Analytics</h1>
+          <button className="nav-link active">
+            Analytics
+          </button>
         </div>
-        <button className="header-logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </header>
 
+        <div className="navbar-actions">
+          <button className="nav-btn" onClick={handleLogout}>
+            Sign Out
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Content */}
       <main className="analytics-main">
-        <div className="analytics-greeting">
-          <h2>{fullName}'s Workout Analytics</h2>
-        </div>
+        {/* Page Header */}
+        <header className="analytics-header">
+          <p className="header-eyebrow">Workout Insights</p>
+          <h2 className="header-title">{displayName}'s Progress</h2>
+        </header>
 
-        {/* Stats Cards */}
-        <section className="stats-cards">
+        {/* Stats Bento Grid */}
+        <section className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">🔥</div>
-            <div className="stat-content">
-              <span className="stat-value">{consistency?.current_streak || 0}</span>
-              <span className="stat-label">Day Streak</span>
-            </div>
+            <span className="stat-icon">🔥</span>
+            <span className="stat-value">{consistency?.current_streak || 0}</span>
+            <span className="stat-label">Day Streak</span>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">💪</div>
-            <div className="stat-content">
-              <span className="stat-value">{summary?.total_workouts || 0}</span>
-              <span className="stat-label">Total Workouts</span>
-            </div>
+            <span className="stat-icon">💪</span>
+            <span className="stat-value">{summary?.total_workouts || 0}</span>
+            <span className="stat-label">Total Workouts</span>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">⏱️</div>
-            <div className="stat-content">
-              <span className="stat-value">{summary?.total_time_formatted || '0m'}</span>
-              <span className="stat-label">Total Time</span>
-            </div>
+            <span className="stat-icon">⏱️</span>
+            <span className="stat-value">{summary?.total_time_formatted || '0m'}</span>
+            <span className="stat-label">Total Time</span>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">📊</div>
-            <div className="stat-content">
-              <span className="stat-value">{summary?.total_volume || 0}</span>
-              <span className="stat-label">Total Volume</span>
-            </div>
+            <span className="stat-icon">📊</span>
+            <span className="stat-value">{summary?.total_volume?.toLocaleString() || 0}</span>
+            <span className="stat-label">Total Volume</span>
           </div>
         </section>
 
-        {/* Charts Section */}
-        <section className="charts-section">
+        {/* Charts Grid */}
+        <section className="charts-grid">
           {/* Exercise Frequency Bar Chart */}
-          <div className="chart-card">
-            <h3>Exercise Frequency</h3>
+          <div className="glass-card">
+            <h3 className="glass-card-title">Exercise Frequency</h3>
             {exerciseChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={exerciseChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                  <YAxis stroke="#9ca3af" fontSize={12} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1f2937',
-                      border: '1px solid #374151',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="chart-container">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={exerciseChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#6e6e73" 
+                      fontSize={11} 
+                      tickLine={false}
+                      axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    />
+                    <YAxis 
+                      stroke="#6e6e73" 
+                      fontSize={11} 
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      labelStyle={{ color: '#f5f5f7', fontWeight: 600, marginBottom: 4 }}
+                      itemStyle={{ color: '#86868b' }}
+                      cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                    />
+                    <Bar 
+                      dataKey="count" 
+                      fill="#0071e3" 
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={50}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
               <div className="empty-chart">No exercise data yet</div>
             )}
           </div>
 
           {/* Exercise Distribution Pie Chart */}
-          <div className="chart-card">
-            <h3>Exercise Distribution</h3>
+          <div className="glass-card">
+            <h3 className="glass-card-title">Exercise Distribution</h3>
             {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1f2937',
-                      border: '1px solid #374151',
-                      borderRadius: '8px'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <>
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={90}
+                        paddingAngle={4}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {pieData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={tooltipStyle}
+                        labelStyle={{ color: '#f5f5f7', fontWeight: 600 }}
+                        itemStyle={{ color: '#86868b' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="pie-legend">
+                  {pieData.map((entry, index) => (
+                    <div key={entry.name} className="legend-item">
+                      <span
+                        className="legend-color"
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      ></span>
+                      <span className="legend-label">{entry.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="empty-chart">No exercise data yet</div>
             )}
-            <div className="pie-legend">
-              {pieData.map((entry, index) => (
-                <div key={entry.name} className="legend-item">
-                  <span
-                    className="legend-color"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></span>
-                  <span className="legend-label">{entry.name}</span>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
         {/* Consistency Section */}
         <section className="consistency-section">
-          <div className="chart-card full-width">
-            <h3>Consistency Stats</h3>
-            <div className="consistency-stats">
+          <div className="glass-card">
+            <h3 className="glass-card-title">Consistency</h3>
+            <div className="consistency-grid">
               <div className="consistency-stat">
                 <span className="consistency-value">{consistency?.current_streak || 0}</span>
                 <span className="consistency-label">Current Streak</span>
@@ -227,12 +252,12 @@ export function Analytics() {
         </section>
 
         {/* Recent Workouts Table */}
-        <section className="workouts-section">
-          <div className="chart-card full-width">
-            <h3>Recent Workouts</h3>
+        <section className="table-section">
+          <div className="glass-card">
+            <h3 className="glass-card-title">Recent Workouts</h3>
             {workouts.length > 0 ? (
-              <div className="workouts-table-wrapper">
-                <table className="workouts-table">
+              <div className="table-wrapper">
+                <table className="data-table">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -247,7 +272,7 @@ export function Analytics() {
                     {workouts.map(workout => (
                       <tr key={workout.id}>
                         <td>{new Date(workout.created_at).toLocaleDateString()}</td>
-                        <td>{workout.workout_performed}</td>
+                        <td className="exercise-name">{workout.workout_performed}</td>
                         <td>{workout.activity || '-'}</td>
                         <td>{workout.sets || '-'}</td>
                         <td>{workout.reps || '-'}</td>
@@ -258,26 +283,28 @@ export function Analytics() {
                 </table>
               </div>
             ) : (
-              <div className="empty-table">No workouts recorded yet. Start a workout to see your data!</div>
+              <div className="empty-table">
+                No workouts recorded yet. Start a session to track your progress!
+              </div>
             )}
           </div>
         </section>
 
-        {/* Exercises Table */}
-        <section className="exercises-section">
-          <div className="chart-card full-width">
-            <h3>Exercise Breakdown</h3>
+        {/* Exercises Breakdown Table */}
+        <section className="table-section">
+          <div className="glass-card">
+            <h3 className="glass-card-title">Exercise Breakdown</h3>
             {exercises.length > 0 ? (
-              <div className="workouts-table-wrapper">
-                <table className="workouts-table">
+              <div className="table-wrapper">
+                <table className="data-table">
                   <thead>
                     <tr>
                       <th>Exercise</th>
-                      <th>Times Performed</th>
-                      <th>Total Sets</th>
-                      <th>Total Reps</th>
-                      <th>Total Time</th>
-                      <th>Last Performed</th>
+                      <th>Times</th>
+                      <th>Sets</th>
+                      <th>Reps</th>
+                      <th>Time</th>
+                      <th>Last Done</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -46,36 +46,49 @@ export function Signup() {
   }
 
   return (
-    <div className="auth-container">
+    <div className="auth-page">
+      {/* Branding */}
+      <div className="auth-branding">
+        <h1 className="auth-logo">Hype Me Up</h1>
+        <p className="auth-tagline">Your AI-powered fitness coach</p>
+      </div>
+
+      {/* Glass Card */}
       <div className="auth-card">
-        <h1>Create Account</h1>
-        <p className="auth-subtitle">Sign up to get started</p>
+        <div className="auth-header">
+          <span className="auth-eyebrow">Get Started</span>
+          <h2 className="auth-title">Create your account</h2>
+        </div>
         
         {error && <div className="auth-error">{error}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="firstName">First Name</label>
-            <input
-              id="firstName"
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="John"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="lastName">Last Name</label>
-            <input
-              id="lastName"
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Doe"
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name</label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="John"
+                required
+                autoComplete="given-name"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Doe"
+                required
+                autoComplete="family-name"
+              />
+            </div>
           </div>
           
           <div className="form-group">
@@ -87,6 +100,7 @@ export function Signup() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
+              autoComplete="email"
             />
           </div>
           
@@ -97,8 +111,9 @@ export function Signup() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="At least 6 characters"
               required
+              autoComplete="new-password"
             />
           </div>
           
@@ -109,13 +124,21 @@ export function Signup() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Confirm your password"
               required
+              autoComplete="new-password"
             />
           </div>
           
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Creating account...
+              </>
+            ) : (
+              'Create Account'
+            )}
           </button>
         </form>
         

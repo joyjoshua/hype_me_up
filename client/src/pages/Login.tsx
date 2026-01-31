@@ -27,10 +27,19 @@ export function Login() {
   }
 
   return (
-    <div className="auth-container">
+    <div className="auth-page">
+      {/* Branding */}
+      <div className="auth-branding">
+        <h1 className="auth-logo">Hype Me Up</h1>
+        <p className="auth-tagline">Your AI-powered fitness coach</p>
+      </div>
+
+      {/* Glass Card */}
       <div className="auth-card">
-        <h1>Welcome Back</h1>
-        <p className="auth-subtitle">Sign in to your account</p>
+        <div className="auth-header">
+          <span className="auth-eyebrow">Welcome back</span>
+          <h2 className="auth-title">Sign in to your account</h2>
+        </div>
         
         {error && <div className="auth-error">{error}</div>}
         
@@ -44,6 +53,7 @@ export function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
+              autoComplete="email"
             />
           </div>
           
@@ -54,18 +64,26 @@ export function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Enter your password"
               required
+              autoComplete="current-password"
             />
           </div>
           
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Signing in...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
         
         <p className="auth-footer">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Create one</Link>
         </p>
       </div>
     </div>
