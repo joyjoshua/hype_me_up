@@ -63,7 +63,11 @@ router.post('/livekit/token', authMiddleware, async (req: AuthenticatedRequest, 
     try {
       const dispatchClient = new AgentDispatchClient(livekitUrl, apiKey, apiSecret)
       await dispatchClient.createDispatch(roomName, targetAgent, {
-        metadata: JSON.stringify({ userId: identity }),
+        metadata: JSON.stringify({
+          userId: identity,
+          username: req.user?.firstName || 'Friend',
+          roomName: roomName,
+        }),
       })
       console.log(`Agent "${targetAgent}" dispatched to room "${roomName}"`)
     } catch (dispatchError) {
