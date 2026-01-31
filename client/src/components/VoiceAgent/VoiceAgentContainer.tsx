@@ -22,6 +22,7 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
   const [shouldConnect, setShouldConnect] = useState(false)
 
   const livekitUrl = import.meta.env.VITE_LIVEKIT_URL || 'ws://localhost:7880'
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
   const handleConnect = useCallback(async () => {
     if (!session?.access_token) {
@@ -33,7 +34,7 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:3001/api/livekit/token', {
+      const response = await fetch(`${apiBase}/api/livekit/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ export function VoiceAgentContainer({ roomName }: VoiceAgentContainerProps) {
     } finally {
       setIsConnecting(false)
     }
-  }, [session, user, finalRoomName])
+  }, [session, user, finalRoomName, apiBase])
 
   const handleDisconnect = useCallback(() => {
     setToken(null)
