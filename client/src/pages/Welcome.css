@@ -29,6 +29,34 @@
   letter-spacing: -0.5px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-analytics-button {
+  padding: 10px 24px;
+  background: rgba(99, 102, 241, 0.3);
+  color: white;
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-analytics-button:hover {
+  background: rgba(99, 102, 241, 0.5);
+  border-color: rgba(99, 102, 241, 0.7);
+  transform: translateY(-1px);
+}
+
+.header-analytics-button:active {
+  transform: translateY(0);
+}
+
 .header-logout-button {
   padding: 10px 24px;
   background: rgba(255, 255, 255, 0.2);

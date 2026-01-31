@@ -12,11 +12,13 @@ export function AgentControls({ onDisconnect }: AgentControlsProps) {
   const [isMuted, setIsMuted] = useState(false)
 
   // Track mute state from participant
+  // Use specific property as dependency to avoid infinite loops
+  const isMicEnabled = localParticipant?.isMicrophoneEnabled
   useEffect(() => {
-    if (localParticipant) {
-      setIsMuted(!localParticipant.isMicrophoneEnabled)
+    if (isMicEnabled !== undefined) {
+      setIsMuted(!isMicEnabled)
     }
-  }, [localParticipant])
+  }, [isMicEnabled])
 
   const handleMuteToggle = async () => {
     if (!localParticipant) return

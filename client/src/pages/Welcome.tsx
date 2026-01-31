@@ -12,6 +12,10 @@ export function Welcome() {
     navigate('/login')
   }
 
+  const handleAnalytics = () => {
+    navigate('/analytics')
+  }
+
   // Get user's full name from metadata
   const firstName = user?.user_metadata?.first_name || ''
   const lastName = user?.user_metadata?.last_name || ''
@@ -23,9 +27,14 @@ export function Welcome() {
         <div className="header-logo">
           <h1 className="logo-text">Hype Me Up</h1>
         </div>
-        <button className="header-logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+        <div className="header-actions">
+          <button className="header-analytics-button" onClick={handleAnalytics}>
+            📊 Analytics
+          </button>
+          <button className="header-logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="welcome-main">

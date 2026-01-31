@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { Login } from './pages/Login'
 import { Signup } from './pages/Signup'
 import { Welcome } from './pages/Welcome'
+import { Analytics } from './pages/Analytics/Analytics'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -27,6 +28,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Welcome />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <Analytics />
           </ProtectedRoute>
         }
       />

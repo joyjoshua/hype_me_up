@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useVoiceAssistant, useTracks, TrackReference } from '@livekit/components-react'
 import { Track } from 'livekit-client'
 import './VoiceAgent.css'
@@ -16,20 +16,27 @@ export function AgentVisualizer() {
   const dataArrayRef = useRef<Uint8Array | null>(null)
 
   // Find agent audio track - prefer useVoiceAssistant, fallback to useTracks
-  const agentTrack = voiceAssistant?.audioTrack
-    ? { publication: { track: voiceAssistant.audioTrack } }
-    : tracks.find(
-        (trackRef: TrackReference) =>
-          trackRef.publication?.kind === 'audio' && trackRef.participant?.identity?.includes('agent')
-      )
+  // Memoize to prevent creating new object on every render
+  const agentTrack = useMemo(() => {
+    if (voiceAssistant?.audioTrack) {
+      return { publication: { track: voiceAssistant.audioTrack } }
+    }
+    return tracks.find(
+      (trackRef: TrackReference) =>
+        trackRef.publication?.kind === 'audio' && trackRef.participant?.identity?.includes('agent')
+    )
+  }, [voiceAssistant?.audioTrack, tracks])
+
+  // Extract the actual track for stable dependency
+  const trackInstance = agentTrack?.publication?.track as Track | undefined
 
   useEffect(() => {
-    if (!agentTrack?.publication?.track) {
+    if (!trackInstance) {
       setAudioLevels(new Array(20).fill(0))
       return
     }
 
-    const track = agentTrack.publication.track as Track
+    const track = trackInstance
     if (track.kind !== 'audio') {
       setAudioLevels(new Array(20).fill(0))
       return
@@ -90,7 +97,7 @@ export function AgentVisualizer() {
         audioContextRef.current.close().catch(console.error)
       }
     }
-  }, [agentTrack])
+  }, [trackInstance])
 
   // Determine agent state - prefer useVoiceAssistant state, fallback to audio levels
   const assistantState = voiceAssistant?.state
