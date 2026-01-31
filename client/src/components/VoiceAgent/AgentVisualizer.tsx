@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
-import { useVoiceAssistant, useTracks, TrackReference } from '@livekit/components-react'
+import { useVoiceAssistant, useTracks } from '@livekit/components-react'
 import { Track } from 'livekit-client'
 import './VoiceAgent.css'
 
@@ -8,9 +8,9 @@ export function AgentVisualizer() {
   const voiceAssistant = useVoiceAssistant()
   
   // Fallback to useTracks if useVoiceAssistant doesn't provide track
-  const tracks = useTracks([{ source: 'agent' }], { onlySubscribed: true })
+  const tracks = useTracks([Track.Source.Microphone, Track.Source.Unknown], { onlySubscribed: true })
   const [audioLevels, setAudioLevels] = useState<number[]>([])
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const dataArrayRef = useRef<Uint8Array | null>(null)
@@ -22,7 +22,7 @@ export function AgentVisualizer() {
       return { publication: { track: voiceAssistant.audioTrack } }
     }
     return tracks.find(
-      (trackRef: TrackReference) =>
+      (trackRef) =>
         trackRef.publication?.kind === 'audio' && trackRef.participant?.identity?.includes('agent')
     )
   }, [voiceAssistant?.audioTrack, tracks])
@@ -56,13 +56,15 @@ export function AgentVisualizer() {
 
         audioContextRef.current = audioContext
         analyserRef.current = analyser
-        dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount)
+        const bufferLength = analyser.frequencyBinCount
+        const dataArray = new Uint8Array(bufferLength)
+        dataArrayRef.current = dataArray
 
         // Start animation loop
         const updateLevels = () => {
           if (!analyserRef.current || !dataArrayRef.current) return
 
-          analyserRef.current.getByteFrequencyData(dataArrayRef.current)
+          analyserRef.current.getByteFrequencyData(dataArray)
 
           // Convert frequency data to visual bars (20 bars)
           const barCount = 20
