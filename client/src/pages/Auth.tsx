@@ -18,8 +18,9 @@ export function Auth() {
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [billing, setBilling] = useState<BillingPeriod>('yearly')
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, user, session } = useAuth()
   const navigate = useNavigate()
   
   const heroRef = useRef<HTMLElement>(null)
@@ -31,6 +32,49 @@ export function Auth() {
 
   const scrollToPricing = () => {
     pricingRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Handle checkout - redirect to Dodo Payments hosted checkout
+  const handleCheckout = async (planName: string) => {
+    // If user is not logged in, prompt them to sign up first
+    if (!user || !session) {
+      switchMode('signup')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    setCheckoutLoading(planName)
+    
+    try {
+      const response = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          plan: planName.toLowerCase(),
+          billing,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        throw new Error('No checkout URL returned')
+      }
+    } catch (err) {
+      console.error('Checkout error:', err)
+      alert(err instanceof Error ? err.message : 'Failed to start checkout. Please try again.')
+    } finally {
+      setCheckoutLoading(null)
+    }
   }
 
   const resetForm = () => {
@@ -251,140 +295,145 @@ export function Auth() {
             <div className="auth-form-scroll">
               {/* Form Header */}
               <div className="auth-form-header">
-              <h2 className="auth-form-title">
-                {mode === 'login' ? 'Welcome back' : 'Get started for free'}
-              </h2>
-              <p className="auth-form-subtitle">
-                {mode === 'login' 
-                  ? 'Sign in to continue your journey' 
-                  : 'Create your account and start today'}
-              </p>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="auth-error-banner">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M8 4v4M8 10v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                {error}
+                <h2 className="auth-form-title">
+                  {mode === 'login' ? 'Welcome back' : 'Get started for free'}
+                </h2>
+                <p className="auth-form-subtitle">
+                  {mode === 'login' 
+                    ? 'Sign in to continue your journey' 
+                    : 'Create your account and start today'}
+                </p>
               </div>
-            )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="auth-form-fields">
-              {mode === 'signup' && (
-                <div className="form-row">
-                  <div className="form-field">
-                    <label htmlFor="firstName">First Name</label>
-                    <input
-                      id="firstName"
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="John"
-                      required
-                      autoComplete="given-name"
-                    />
-                  </div>
-                  <div className="form-field">
-                    <label htmlFor="lastName">Last Name</label>
-                    <input
-                      id="lastName"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Doe"
-                      required
-                      autoComplete="family-name"
-                    />
-                  </div>
+              {/* Error Message */}
+              {error && (
+                <div className="auth-error-banner">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M8 4v4M8 10v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  {error}
                 </div>
               )}
 
-              <div className="form-field">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  autoComplete="email"
-                />
-              </div>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="auth-form-fields">
+                {mode === 'signup' && (
+                  <div className="form-row">
+                    <div className="form-field">
+                      <label htmlFor="firstName">First Name</label>
+                      <input
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="John"
+                        required
+                        autoComplete="given-name"
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label htmlFor="lastName">Last Name</label>
+                      <input
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Doe"
+                        required
+                        autoComplete="family-name"
+                      />
+                    </div>
+                  </div>
+                )}
 
-              <div className="form-field">
-                <label htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={mode === 'signup' ? 'At least 6 characters' : 'Enter your password'}
-                  required
-                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                />
-              </div>
-
-              {mode === 'signup' && (
                 <div className="form-field">
-                  <label htmlFor="confirmPassword">Confirm Password</label>
+                  <label htmlFor="email">Email</label>
                   <input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm your password"
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
                     required
-                    autoComplete="new-password"
+                    autoComplete="email"
                   />
                 </div>
-              )}
 
-              <button type="submit" className="auth-submit-btn" disabled={loading}>
-                {loading ? (
-                  <>
-                    <span className="spinner"></span>
-                    {mode === 'login' ? 'Signing in...' : 'Creating account...'}
-                  </>
-                ) : (
-                  <>
-                    {mode === 'login' ? 'Sign In' : 'Create Account'}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </>
+                <div className="form-field">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === 'signup' ? 'At least 6 characters' : 'Enter your password'}
+                    required
+                    autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                  />
+                </div>
+
+                {mode === 'signup' && (
+                  <div className="form-field">
+                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your password"
+                      required
+                      autoComplete="new-password"
+                    />
+                  </div>
                 )}
-              </button>
-            </form>
 
-            {/* Divider */}
-            <div className="auth-divider-line">
-              <span>or continue with</span>
-            </div>
+                <button type="submit" className="auth-submit-btn" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <span className="spinner"></span>
+                      {mode === 'login' ? 'Signing in...' : 'Creating account...'}
+                    </>
+                  ) : (
+                    <>
+                      {mode === 'login' ? 'Sign In' : 'Create Account'}
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
 
-            {/* OAuth Buttons */}
-            <div className="auth-oauth-buttons auth-oauth-single">
-              <button type="button" className="oauth-btn" disabled>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-                  <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-                  <path d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z" fill="#FBBC05"/>
-                  <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
-                </svg>
-                Continue with Google
-              </button>
-            </div>
+              {/* Only show Google OAuth and Terms on Sign In tab */}
+              {mode === 'login' && (
+                <>
+                  {/* Divider */}
+                  <div className="auth-divider-line">
+                    <span>or continue with</span>
+                  </div>
 
-              {/* Terms */}
-              <p className="auth-terms">
-                By continuing, you agree to our{' '}
-                <Link to="/terms">Terms of Service</Link> and{' '}
-                <Link to="/privacy">Privacy Policy</Link>
-              </p>
+                  {/* OAuth Buttons */}
+                  <div className="auth-oauth-buttons auth-oauth-single">
+                    <button type="button" className="oauth-btn" disabled>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                        <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                        <path d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+                        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
+                      </svg>
+                      Continue with Google
+                    </button>
+                  </div>
+
+                  {/* Terms */}
+                  <p className="auth-terms">
+                    By continuing, you agree to our{' '}
+                    <Link to="/terms">Terms of Service</Link> and{' '}
+                    <Link to="/privacy">Privacy Policy</Link>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -576,9 +625,17 @@ export function Auth() {
                 </ul>
                 <button 
                   className={`plan-cta ${plan.popular ? 'plan-cta-primary' : ''}`}
-                  onClick={() => switchMode('signup')}
+                  onClick={() => plan.name === 'Free' ? switchMode('signup') : handleCheckout(plan.name)}
+                  disabled={checkoutLoading === plan.name}
                 >
-                  {plan.cta}
+                  {checkoutLoading === plan.name ? (
+                    <>
+                      <span className="spinner"></span>
+                      Redirecting...
+                    </>
+                  ) : (
+                    plan.cta
+                  )}
                 </button>
               </div>
             ))}
