@@ -524,4 +524,149 @@ router.get('/analytics/consistency', async (req, res) => {
   }
 })
 
+// ============================================
+// DODO PAYMENTS - CHECKOUT & SUBSCRIPTIONS
+// ============================================
+
+// Create a Dodo Payments checkout session (Requires Auth)
+router.post('/checkout/create-session', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id
+    const userEmail = req.user?.email || ''
+    const userName = `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim()
+
+    const DODO_API_KEY = process.env.DODO_PAYMENTS_API_KEY
+    const DODO_PRODUCT_ID = process.env.DODO_PRODUCT_ID
+    
+    if (!DODO_API_KEY || !DODO_PRODUCT_ID) {
+      console.error('[Dodo] Missing configuration')
+      res.status(500).json({ error: 'Dodo Payments configuration missing' })
+      return
+    }
+
+    // Use test mode API URL
+    const apiUrl = 'https://test.dodopayments.com/checkouts'
+
+    const requestBody = {
+      product_cart: [{ product_id: DODO_PRODUCT_ID, quantity: 1 }],
+      return_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      subscription_data: {
+        trial_period_days: 7,
+      },
+      customer: {
+        email: userEmail,
+        name: userName,
+      },
+      metadata: {
+        user_id: userId,
+      },
+    }
+
+    console.log('[Dodo] Creating checkout session for user:', userId)
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DODO_API_KEY}`,
+      },
+      body: JSON.stringify(requestBody),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('[Dodo] API Error:', response.status, errorText)
+      res.status(response.status).json({ error: 'Dodo API error', details: errorText })
+      return
+    }
+
+    const data = await response.json()
+    res.json({
+      success: true,
+      checkout_url: data.checkout_url,
+      session_id: data.session_id,
+    })
+  } catch (error) {
+    console.error('[Dodo] Checkout error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+// Check subscription status
+router.get('/subscription/status', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id
+    
+    // Query our database for subscription status
+    const { data, error } = await supabaseAdmin
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('[Subscription] DB error:', error)
+      res.status(500).json({ error: 'Database error' })
+      return
+    }
+
+    if (!data) {
+      res.json({ status: 'pending', hasAccess: false })
+      return
+    }
+
+    const hasAccess = ['trial', 'active'].includes(data.status)
+    res.json({
+      status: data.status,
+      hasAccess,
+      plan: data.plan,
+      trialEndsAt: data.trial_ends_at
+    })
+  } catch (error) {
+    console.error('[Subscription] Status error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+// Dodo Webhook Handler
+router.post('/webhooks/dodo', async (req, res: Response) => {
+  try {
+    const event = req.body
+    console.log('[Dodo Webhook] Received:', event.type)
+
+    // IMPORTANT: In production, verify the webhook signature using DODO_WEBHOOK_SECRET
+
+    switch (event.type) {
+      case 'subscription.active':
+      case 'subscription.trialing':
+        const userId = event.data.metadata?.user_id
+        if (userId) {
+          await supabaseAdmin.from('subscriptions').upsert({
+            user_id: userId,
+            dodo_subscription_id: event.data.subscription_id,
+            status: event.type === 'subscription.trialing' ? 'trial' : 'active',
+            trial_ends_at: event.data.trial_ends_at,
+            plan: 'pro',
+            updated_at: new Date().toISOString()
+          })
+          console.log('[Dodo Webhook] Updated subscription for user:', userId)
+        }
+        break
+
+      case 'subscription.cancelled':
+      case 'subscription.expired':
+        await supabaseAdmin
+          .from('subscriptions')
+          .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+          .eq('dodo_subscription_id', event.data.subscription_id)
+        break
+    }
+
+    res.json({ received: true })
+  } catch (error) {
+    console.error('[Dodo Webhook] Error:', error)
+    res.status(500).json({ error: 'Webhook processing failed' })
+  }
+})
+
 export default router

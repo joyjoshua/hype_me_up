@@ -1,9 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { SubscriptionRoute } from './components/SubscriptionRoute'
 import { Auth } from './pages/Auth'
 import { Welcome } from './pages/Welcome'
 import { Analytics } from './pages/Analytics/Analytics'
+import { PaymentRequired } from './pages/PaymentRequired'
+import { PaymentSuccess } from './pages/PaymentSuccess'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -48,21 +51,39 @@ function AppRoutes() {
         }
       />
       
-      {/* Protected App Pages */}
+      {/* Payment Flow (requires auth, no subscription guard) */}
+      <Route
+        path="/payment-required"
+        element={
+          <ProtectedRoute>
+            <PaymentRequired />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment-success"
+        element={
+          <ProtectedRoute>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Protected App Pages (requires auth AND active subscription) */}
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <SubscriptionRoute>
             <Welcome />
-          </ProtectedRoute>
+          </SubscriptionRoute>
         }
       />
       <Route
         path="/analytics"
         element={
-          <ProtectedRoute>
+          <SubscriptionRoute>
             <Analytics />
-          </ProtectedRoute>
+          </SubscriptionRoute>
         }
       />
       

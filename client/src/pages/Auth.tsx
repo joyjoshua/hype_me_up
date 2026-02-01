@@ -118,7 +118,8 @@ export function Auth() {
         setError(error.message)
         setLoading(false)
       } else {
-        navigate('/dashboard')
+        // After signup, force the user to start a trial before dashboard
+        navigate('/payment-required')
       }
     } else {
       const { error } = await signIn(email, password)
@@ -250,7 +251,7 @@ export function Auth() {
                 <div className="avatar" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>K</div>
               </div>
               <p className="social-proof-text">
-                Join <strong>2,500+</strong> people crushing their fitness goals
+                <strong>Building a community of people crushing their fitness goals</strong>
               </p>
             </div>
 
