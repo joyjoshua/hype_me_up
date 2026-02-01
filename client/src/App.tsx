@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { SubscriptionRoute } from './components/SubscriptionRoute'
 import { Auth } from './pages/Auth'
 import { Welcome } from './pages/Welcome'
 import { Analytics } from './pages/Analytics/Analytics'
