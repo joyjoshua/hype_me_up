@@ -69,21 +69,21 @@ function AppRoutes() {
         }
       />
       
-      {/* Protected App Pages (requires auth AND active subscription) */}
+      {/* Protected App Pages (subscription check disabled for now) */}
       <Route
         path="/dashboard"
         element={
-          <SubscriptionRoute>
+          <ProtectedRoute>
             <Welcome />
-          </SubscriptionRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/analytics"
         element={
-          <SubscriptionRoute>
+          <ProtectedRoute>
             <Analytics />
-          </SubscriptionRoute>
+          </ProtectedRoute>
         }
       />
       

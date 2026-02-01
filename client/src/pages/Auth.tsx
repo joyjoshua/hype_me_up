@@ -118,8 +118,8 @@ export function Auth() {
         setError(error.message)
         setLoading(false)
       } else {
-        // After signup, force the user to start a trial before dashboard
-        navigate('/payment-required')
+        // Go directly to dashboard (payment flow disabled for now)
+        navigate('/dashboard')
       }
     } else {
       const { error } = await signIn(email, password)
