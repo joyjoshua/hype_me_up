@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { Login } from './pages/Login'
-import { Signup } from './pages/Signup'
+import { Auth } from './pages/Auth'
 import { Welcome } from './pages/Welcome'
 import { Analytics } from './pages/Analytics/Analytics'
 
@@ -14,7 +13,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (user) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/dashboard" replace />
   }
   
   return <>{children}</>
@@ -23,8 +22,35 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
+      {/* Auth Landing Page (includes Hero & Pricing sections) */}
       <Route
         path="/"
+        element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        }
+      />
+      
+      {/* Protected App Pages */}
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Welcome />
@@ -39,22 +65,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <PublicRoute>
-            <Signup />
-          </PublicRoute>
-        }
-      />
+      
+      {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

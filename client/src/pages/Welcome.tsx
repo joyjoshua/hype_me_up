@@ -25,12 +25,24 @@ export function Welcome() {
       {/* Glass Navbar */}
       <nav className="welcome-navbar">
         <div className="navbar-logo">
-          <h1 className="navbar-logo-text">Hype Me Up</h1>
+          <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+            <defs>
+              <linearGradient id="dashLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#667eea" />
+                <stop offset="100%" stopColor="#764ba2" />
+              </linearGradient>
+            </defs>
+            <circle cx="24" cy="24" r="24" fill="url(#dashLogoGradient)" />
+            <path d="M16 28C16 28 18 24 24 24C30 24 32 28 32 28" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="18" cy="20" r="2" fill="white" />
+            <circle cx="30" cy="20" r="2" fill="white" />
+          </svg>
+          <h1 className="navbar-logo-text">HypeMeUp</h1>
         </div>
         
         <div className="navbar-links">
           <button className="nav-link active">
-            Home
+            Dashboard
           </button>
           <button className="nav-link" onClick={handleAnalytics}>
             Analytics
