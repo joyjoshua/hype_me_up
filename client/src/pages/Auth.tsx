@@ -9,7 +9,7 @@ type BillingPeriod = 'monthly' | 'yearly'
 export function Auth() {
   const location = useLocation()
   const initialMode: AuthMode = location.pathname === '/signup' ? 'signup' : 'login'
-  
+
   const [mode, setMode] = useState<AuthMode>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -22,7 +22,7 @@ export function Auth() {
   const [billing, setBilling] = useState<BillingPeriod>('yearly')
   const { signIn, signUp, user, session } = useAuth()
   const navigate = useNavigate()
-  
+
   const heroRef = useRef<HTMLElement>(null)
   const pricingRef = useRef<HTMLElement>(null)
 
@@ -44,7 +44,7 @@ export function Auth() {
     }
 
     setCheckoutLoading(planName)
-    
+
     try {
       const response = await fetch('/api/checkout/create-session', {
         method: 'POST',
@@ -214,7 +214,7 @@ export function Auth() {
                 <span className="gradient-text">Always There.</span>
               </h1>
               <p className="auth-hero-subtitle">
-                Get personalized motivation, real-time feedback, and unwavering support 
+                Get personalized motivation, real-time feedback, and unwavering support
                 from an AI that truly understands your fitness journey.
               </p>
             </div>
@@ -223,20 +223,20 @@ export function Auth() {
             <div className="auth-feature-pills">
               <div className="feature-pill">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1L10.163 5.279L15 6.006L11.5 9.371L12.326 14L8 11.779L3.674 14L4.5 9.371L1 6.006L5.837 5.279L8 1Z" fill="currentColor"/>
+                  <path d="M8 1L10.163 5.279L15 6.006L11.5 9.371L12.326 14L8 11.779L3.674 14L4.5 9.371L1 6.006L5.837 5.279L8 1Z" fill="currentColor" />
                 </svg>
                 Voice-Powered
               </div>
               <div className="feature-pill">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
                 24/7 Available
               </div>
               <div className="feature-pill">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 3a5 5 0 0 0-5 5c0 1.5.7 2.9 1.8 3.9L8 15l3.2-3.1A5 5 0 0 0 8 3z" fill="currentColor"/>
+                  <path d="M8 3a5 5 0 0 0-5 5c0 1.5.7 2.9 1.8 3.9L8 15l3.2-3.1A5 5 0 0 0 8 3z" fill="currentColor" />
                 </svg>
                 Personalized
               </div>
@@ -259,7 +259,7 @@ export function Auth() {
             <button className="scroll-indicator" onClick={scrollToHero}>
               <span>Learn more</span>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 4v12M6 12l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10 4v12M6 12l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>
@@ -277,13 +277,13 @@ export function Auth() {
           <div className="auth-form-container">
             {/* Mode Toggle - Fixed at top */}
             <div className="auth-mode-toggle">
-              <button 
+              <button
                 className={`mode-toggle-btn ${mode === 'login' ? 'active' : ''}`}
                 onClick={() => switchMode('login')}
               >
                 Sign In
               </button>
-              <button 
+              <button
                 className={`mode-toggle-btn ${mode === 'signup' ? 'active' : ''}`}
                 onClick={() => switchMode('signup')}
               >
@@ -300,8 +300,8 @@ export function Auth() {
                   {mode === 'login' ? 'Welcome back' : 'Get started for free'}
                 </h2>
                 <p className="auth-form-subtitle">
-                  {mode === 'login' 
-                    ? 'Sign in to continue your journey' 
+                  {mode === 'login'
+                    ? 'Sign in to continue your journey'
                     : 'Create your account and start today'}
                 </p>
               </div>
@@ -310,8 +310,8 @@ export function Auth() {
               {error && (
                 <div className="auth-error-banner">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M8 4v4M8 10v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M8 4v4M8 10v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                   {error}
                 </div>
@@ -399,7 +399,7 @@ export function Auth() {
                     <>
                       {mode === 'login' ? 'Sign In' : 'Create Account'}
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </>
                   )}
@@ -418,10 +418,10 @@ export function Auth() {
                   <div className="auth-oauth-buttons auth-oauth-single">
                     <button type="button" className="oauth-btn" disabled>
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-                        <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-                        <path d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z" fill="#FBBC05"/>
-                        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
+                        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4" />
+                        <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853" />
+                        <path d="M3.964 10.706c-.18-.54-.282-1.117-.282-1.706s.102-1.166.282-1.706V4.962H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.038l3.007-2.332z" fill="#FBBC05" />
+                        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.962L3.964 7.294C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335" />
                       </svg>
                       Continue with Google
                     </button>
@@ -454,8 +454,8 @@ export function Auth() {
             <span className="gradient-text">Powered by AI</span>
           </h2>
           <p className="hero-section-description">
-            HypeMeUp uses advanced voice AI to provide real-time coaching, 
-            motivation, and personalized feedback. It's like having a world-class 
+            HypeMeUp uses advanced voice AI to provide real-time coaching,
+            motivation, and personalized feedback. It's like having a world-class
             trainer in your pocket, available 24/7.
           </p>
 
@@ -464,8 +464,8 @@ export function Auth() {
             <div className="feature-card">
               <div className="feature-icon feature-icon-purple">
                 <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                  <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M12 16a4 4 0 0 0 8 0m-4-6v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
+                  <path d="M12 16a4 4 0 0 0 8 0m-4-6v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <h3 className="feature-title">Voice-First Experience</h3>
@@ -477,8 +477,8 @@ export function Auth() {
             <div className="feature-card">
               <div className="feature-icon feature-icon-green">
                 <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                  <path d="M16 4v6m0 12v6M4 16h6m12 0h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="16" cy="16" r="6" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M16 4v6m0 12v6M4 16h6m12 0h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="16" cy="16" r="6" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </div>
               <h3 className="feature-title">Personalized Training</h3>
@@ -490,8 +490,8 @@ export function Auth() {
             <div className="feature-card">
               <div className="feature-icon feature-icon-red">
                 <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                  <path d="M8 24l6-8 4 4 6-10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <rect x="4" y="4" width="24" height="24" rx="4" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M8 24l6-8 4 4 6-10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <rect x="4" y="4" width="24" height="24" rx="4" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </div>
               <h3 className="feature-title">Progress Analytics</h3>
@@ -503,8 +503,8 @@ export function Auth() {
             <div className="feature-card">
               <div className="feature-icon feature-icon-yellow">
                 <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                  <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M16 10v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="2" />
+                  <path d="M16 10v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <h3 className="feature-title">24/7 Availability</h3>
@@ -541,7 +541,7 @@ export function Auth() {
           <button className="scroll-to-pricing" onClick={scrollToPricing}>
             View Pricing
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 4v12M6 12l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10 4v12M6 12l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
@@ -558,19 +558,19 @@ export function Auth() {
             <span className="gradient-text">pricing</span>
           </h2>
           <p className="pricing-section-description">
-            Choose the plan that fits your fitness journey. All plans include 
+            Choose the plan that fits your fitness journey. All plans include
             a 14-day free trial with no credit card required.
           </p>
 
           {/* Billing Toggle */}
           <div className="billing-toggle">
-            <button 
+            <button
               className={`billing-option ${billing === 'monthly' ? 'active' : ''}`}
               onClick={() => setBilling('monthly')}
             >
               Monthly
             </button>
-            <button 
+            <button
               className={`billing-option ${billing === 'yearly' ? 'active' : ''}`}
               onClick={() => setBilling('yearly')}
             >
@@ -583,8 +583,8 @@ export function Auth() {
           {/* Plans */}
           <div className="plans-grid">
             {plans.map((plan) => (
-              <div 
-                key={plan.name} 
+              <div
+                key={plan.name}
                 className={`plan-card ${plan.popular ? 'plan-popular' : ''}`}
               >
                 {plan.popular && (
@@ -612,11 +612,11 @@ export function Auth() {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="plan-feature">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path 
-                          d="M3 8l3 3 7-7" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
+                        <path
+                          d="M3 8l3 3 7-7"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                       </svg>
@@ -624,7 +624,7 @@ export function Auth() {
                     </li>
                   ))}
                 </ul>
-                <button 
+                <button
                   className={`plan-cta ${plan.popular ? 'plan-cta-primary' : ''}`}
                   onClick={() => plan.name === 'Free' ? switchMode('signup') : handleCheckout(plan.name)}
                   disabled={checkoutLoading === plan.name}

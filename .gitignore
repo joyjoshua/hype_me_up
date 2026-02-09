@@ -75,3 +75,7 @@ coverage/
 *.bak
 *.tmp
 *.temp
+
+#docs
+
+docs

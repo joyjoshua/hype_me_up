@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
+// import { SubscriptionRoute } from './components/SubscriptionRoute' // Disabled for now
 import { Auth } from './pages/Auth'
 import { Welcome } from './pages/Welcome'
 import { Analytics } from './pages/Analytics/Analytics'
@@ -9,15 +10,15 @@ import { PaymentSuccess } from './pages/PaymentSuccess'
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  
+
   if (loading) {
     return <div className="loading">Loading...</div>
   }
-  
+
   if (user) {
     return <Navigate to="/dashboard" replace />
   }
-  
+
   return <>{children}</>
 }
 
@@ -49,7 +50,7 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
-      
+
       {/* Payment Flow (requires auth, no subscription guard) */}
       <Route
         path="/payment-required"
@@ -67,7 +68,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      
+
       {/* Protected App Pages (subscription check disabled for now) */}
       <Route
         path="/dashboard"
@@ -85,7 +86,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      
+
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
